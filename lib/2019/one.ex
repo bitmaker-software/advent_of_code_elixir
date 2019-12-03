@@ -1,5 +1,8 @@
 defmodule AdventOfCode.Y2019.One do
   alias AdventOfCode.Tools
+
+  # The file containing the input data
+  @filename "#{Path.dirname(__ENV__.file)}/one_input.txt"
   
   #
   # Part #1
@@ -16,9 +19,8 @@ defmodule AdventOfCode.Y2019.One do
   end
 
   def run() do
-    Tools.read_int_lines_from_console()
+    Tools.read_int_lines_from_file(@filename)
     |> compute_all()
-    |> IO.inspect(label: "Result")
   end
 
   #
@@ -41,8 +43,7 @@ defmodule AdventOfCode.Y2019.One do
   end
 
   def run_2() do
-    Tools.read_int_lines_from_console()
+    Tools.read_int_lines_from_file(@filename)
     |> compute_all_2()
-    |> IO.inspect(label: "Result")
   end
 end

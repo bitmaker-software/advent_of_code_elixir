@@ -54,4 +54,11 @@ defmodule AdventOfCode.Tools do
     |> Enum.map(fn str -> parse_integer(str) end)
   end
 
+  def read_int_lines_from_file(filename) do
+    File.stream!(filename) 
+    |> Stream.map(&String.trim(&1)) 
+    |> Stream.map(&Integer.parse(&1) |> elem(0)) 
+    |> Enum.to_list()  
+  end
+
 end
