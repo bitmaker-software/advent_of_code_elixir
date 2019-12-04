@@ -45,7 +45,6 @@ defmodule AdventOfCode.Y2019.Two do
   def start_program(program) do
     %{status: :running, program: program, index: 0}
     |> next_operation()
-    |> Enum.at(0)
   end
 
   def run() do
@@ -53,6 +52,7 @@ defmodule AdventOfCode.Y2019.Two do
     |> List.replace_at(1, 12)
     |> List.replace_at(2, 2)
     |> start_program()
+    |> Enum.at(0)
   end
 
   #
@@ -64,6 +64,7 @@ defmodule AdventOfCode.Y2019.Two do
     |> List.replace_at(1, noun)
     |> List.replace_at(2, verb)
     |> start_program()
+    |> Enum.at(0)
   end
 
   def start_program_2(program) do
