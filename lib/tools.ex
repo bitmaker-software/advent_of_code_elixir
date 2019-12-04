@@ -61,4 +61,12 @@ defmodule AdventOfCode.Tools do
     |> Enum.to_list()  
   end
 
+  def read_int_list_from_file(filename) do
+    File.stream!(filename) 
+    |> Enum.to_list()
+    |> Enum.at(0)
+    |> String.split(",")
+    |> Enum.map(fn str -> parse_integer(str) end)
+  end
+
 end
