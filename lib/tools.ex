@@ -76,4 +76,8 @@ defmodule AdventOfCode.Tools do
     |> Enum.to_list() 
   end
 
+  def split_number_into_digits(value) do
+    list = for <<x::binary-1 <- Integer.to_string(value)>>, do: x
+    list |> Enum.map(fn(x) -> String.to_integer(x) end)
+  end
 end
