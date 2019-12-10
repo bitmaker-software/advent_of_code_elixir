@@ -72,7 +72,7 @@ defmodule AdventOfCode.Tools do
   def read_int_list_from_string(str) do
     str
     |> String.split(",")
-    |> Enum.map(fn str -> parse_integer(str) end)
+    |> Enum.map(fn str -> parse_integer(String.trim(str)) end)
   end
 
   #AdventOfCode.Tools.read_list_from_file("lib/2019/three_input.txt")
@@ -86,4 +86,13 @@ defmodule AdventOfCode.Tools do
     list = for <<x::binary-1 <- Integer.to_string(value)>>, do: x
     list |> Enum.map(fn(x) -> String.to_integer(x) end)
   end
+
+  def split_string_into_digits(value) do
+    list = for <<x::binary-1 <- value>>, do: x
+    list |> Enum.map(fn(x) -> String.to_integer(x) end)
+  end
+
+  def permutations([]), do: [[]]
+  def permutations(list), do: for elem <- list, rest <- permutations(list--[elem]), do: [elem|rest]
+
 end
