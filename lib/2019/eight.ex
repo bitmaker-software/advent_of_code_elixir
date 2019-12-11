@@ -79,7 +79,7 @@ defmodule AdventOfCode.Y2019.Eight do
   end
 
   def pretty_print(digit) when digit == 0, do: " "
-  def pretty_print(digit) when digit == 1, do: "x"
+  def pretty_print(digit) when digit == 1, do: "X"
   def pretty_print(_digit), do: "." 
 
   def print_data(data) do
