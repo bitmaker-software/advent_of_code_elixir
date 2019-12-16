@@ -9,53 +9,72 @@ defmodule AdventOfCode.Y2019.Seven do
   #
 
   # :halt
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :halt}), do: %{status: :stopped, program: program, index: index + 1, inputs: inputs, outputs: outputs}
+  def operation(%{context: %{index: index}, opcode: :halt} = arguments) do 
+    arguments.context
+    |> Map.put(:status, :stopped)
+    |> Map.put(:index, index + 1)
+  end
   
   # :add
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :add, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :add, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     arg2 = read_value(program, mode, params, 2)
     value = arg1 + arg2
     new_program = write_value(program, params, 3, value)
-    %{status: :running, program: new_program, index: index + 4, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:program, new_program)
+    |> Map.put(:index, index + 4)
   end
 
   # :multiply
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :multiply, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :multiply, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     arg2 = read_value(program, mode, params, 2)
     value = arg1 * arg2
     new_program = write_value(program, params, 3, value)
-    %{status: :running, program: new_program, index: index + 4, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:program, new_program)
+    |> Map.put(:index, index + 4)
   end
 
   # :save - if inputs is an empty list, stop the program until we have more inputs
-  def operation(%{context: %{program: program, index: index, inputs: [], outputs: outputs}, opcode: :save, mode: mode, params: params}) do
-    %{status: :wait, program: program, index: index, inputs: [], outputs: outputs}
+  def operation(%{context: %{inputs: []}, opcode: :save} = arguments) do
+    arguments.context
+    |> Map.put(:status, :wait)
   end
 
   # :save
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :save, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index, inputs: inputs}, opcode: :save, params: params} = arguments) do
     {value, new_inputs} = inputs |> List.pop_at(0)
     IO.puts("Using input #{value}\n")
-    #IO.gets("Please enter a value\n> ")
-    #|> String.trim()
-    #|> String.to_integer()
-
     new_program = write_value(program, params, 1, value)
-    %{status: :running, program: new_program, index: index + 2, inputs: new_inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:program, new_program)
+    |> Map.put(:index, index + 2)
+    |> Map.put(:inputs, new_inputs)
+
   end
 
   # :output
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :output, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index, outputs: outputs}, opcode: :output, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     IO.puts("#{arg1}\n")
-    new_outputs = outputs ++ [arg1] #inputs |> List.insert_at(0, arg1)
-    %{status: :running, program: program, index: index + 2, inputs: inputs, outputs: new_outputs}
+    new_outputs = outputs ++ [arg1] 
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:index, index + 2)
+    |> Map.put(:outputs, new_outputs)
   end
 
   # :jump_if_true
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :jump_if_true, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :jump_if_true, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     new_index =
     if arg1 != 0 do
@@ -63,11 +82,14 @@ defmodule AdventOfCode.Y2019.Seven do
     else
       index + 3
     end
-    %{status: :running, program: program, index: new_index, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:index, new_index)
   end
 
   # :jump_if_false
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :jump_if_false, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :jump_if_false, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     new_index =
     if arg1 == 0 do
@@ -75,11 +97,14 @@ defmodule AdventOfCode.Y2019.Seven do
     else
       index + 3
     end
-    %{status: :running, program: program, index: new_index, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:index, new_index)
   end
 
   # :lt
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :lt, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :lt, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     arg2 = read_value(program, mode, params, 2)
     value =
@@ -89,11 +114,15 @@ defmodule AdventOfCode.Y2019.Seven do
       0
     end
     new_program = write_value(program, params, 3, value)
-    %{status: :running, program: new_program, index: index + 4, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:program, new_program)
+    |> Map.put(:index, index + 4)
   end
 
   # :eq
-  def operation(%{context: %{program: program, index: index, inputs: inputs, outputs: outputs}, opcode: :eq, mode: mode, params: params}) do
+  def operation(%{context: %{program: program, index: index}, opcode: :eq, mode: mode, params: params} = arguments) do
     arg1 = read_value(program, mode, params, 1)
     arg2 = read_value(program, mode, params, 2)
     value =
@@ -103,7 +132,11 @@ defmodule AdventOfCode.Y2019.Seven do
       0
     end
     new_program = write_value(program, params, 3, value)
-    %{status: :running, program: new_program, index: index + 4, inputs: inputs, outputs: outputs}
+
+    arguments.context
+    |> Map.put(:status, :running)
+    |> Map.put(:program, new_program)
+    |> Map.put(:index, index + 4)
   end
 
   def write_value(program, params, parm_index, value) when length(params) >= parm_index and parm_index > 0 do
@@ -137,13 +170,13 @@ defmodule AdventOfCode.Y2019.Seven do
   end
   
   # Wait on the current operation
-  def next_operation(%{status: :wait, program: program} = context), do: context
+  def next_operation(%{status: :wait} = context), do: context
 
   # Terminate the program
-  def next_operation(%{status: :stopped, program: program} = context), do: context
+  def next_operation(%{status: :stopped} = context), do: context
     
   # get the next operation
-  def next_operation(%{status: :running, program: program, index: index, inputs: inputs, outputs: outputs} = context) do
+  def next_operation(%{status: :running, program: program, index: index} = context) do
     params = Enum.slice(program, index, length(program) - index)
     context
     |> decode_operation(params)
@@ -158,7 +191,7 @@ defmodule AdventOfCode.Y2019.Seven do
   end
 
   def run_program(program, inputs, phases, amp \\ 1)
-  def run_program(program, inputs, phases, amp) when amp > 5, do: inputs |> List.first()
+  def run_program(_program, inputs, _phases, amp) when amp > 5, do: inputs |> List.first()
   def run_program(program, inputs, phases, amp) do
 
     {phase, new_phases} = phases |> List.pop_at(0)
@@ -168,7 +201,7 @@ defmodule AdventOfCode.Y2019.Seven do
       value -> [value]++inputs
     end
     
-    %{inputs: new_inputs, outputs: outputs} = 
+    %{outputs: outputs} = 
     program 
     |> start_program(program_inputs)
 
@@ -222,7 +255,7 @@ defmodule AdventOfCode.Y2019.Seven do
       value -> [value]++inputs
     end
 
-    %{status: status, program: new_program, index: new_index, inputs: new_inputs, outputs: outputs} = 
+    %{status: status, program: new_program, index: new_index, outputs: outputs} = 
     program 
     |> start_program(program_inputs, index)
 
@@ -230,7 +263,6 @@ defmodule AdventOfCode.Y2019.Seven do
   end 
 
   def setup_system(program, phases) do
-    amps = 
     for phase <- phases do
       %{program: program, index: 0, inputs: [], phase: phase}
     end

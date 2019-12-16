@@ -1,5 +1,10 @@
 defmodule AdventOfCode.Tools do
   
+  @debug false
+
+  def log(value, string) when @debug == true, do: IO.inspect(value, label: string)
+  def log(value, string), do: value
+
   def parse_integer(str, default \\ 0) do
     case Integer.parse(str) do
       :error -> default
